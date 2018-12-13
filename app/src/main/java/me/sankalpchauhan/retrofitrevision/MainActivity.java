@@ -21,8 +21,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textViewResult = findViewById(R.id.textViewResult);
 
+
+        //createPost();
        // getPosts();
-        getComments();
+        //getComments();
+        //updatePost();
+        deletePost();
 
     }
 
@@ -91,6 +95,89 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Comment>> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
+            }
+        });
+    }
+
+
+    //For testing post method
+    private void createPost(){
+
+//        Map<String, String> fields = new HashMap<>();
+//        fields.put("userId", "25");
+//        fields.put("title", "New Title");
+
+        Post newPost = new Post(23, "New Title", "Kuch Bhi");
+        JsonPlaceHolderAPi.Factory.getInstance().createPost(newPost).enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {if (!response.isSuccessful()) {
+                textViewResult.setText("Code: " + response.code());
+                return;
+            }
+
+                Post postResponse = response.body();
+                String content = "";
+                content += "Code: " + response.code() + "\n";
+              //  content += "ID: " + postResponse.getID() + "\n";
+                content += "User ID: " + postResponse.getUserID() + "\n";
+                content += "Title: " + postResponse.getTitle() + "\n";
+                content += "Text: " + postResponse.getText() + "\n\n";
+
+                    textViewResult.append(content);
+
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
+            }
+        });
+    }
+
+    private void updatePost(){
+        Post post = new Post(12, null, "New Text");
+
+        //If we just want ot change a particular data and not the whole obkect we will use:-
+        //JsonPlaceHolderAPi.Factory.getInstance().putPost(2,post).enqueue(new Callback<Post>() {
+        JsonPlaceHolderAPi.Factory.getInstance().putPost(2,post).enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if (!response.isSuccessful()) {
+                    textViewResult.setText("Code: " + response.code());
+                    return;
+                }
+
+                Post postResponse = response.body();
+
+                String content = "";
+                content += "Code: " + response.code() + "\n";
+                content += "ID: " + postResponse.getID() + "\n";
+                content += "User ID: " + postResponse.getUserID() + "\n";
+                content += "Title: " + postResponse.getTitle() + "\n";
+                content += "Text: " + postResponse.getText() + "\n\n";
+
+                textViewResult.setText(content);
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
+            }
+        });
+    }
+
+
+    void deletePost(){
+        JsonPlaceHolderAPi.Factory.getInstance().deletePost(4).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                //Just get the response wether the item is deleted or not
+                textViewResult.setText("Code: " + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 textViewResult.setText(t.getMessage());
             }
         });
